@@ -1,0 +1,72 @@
+package co.com.bancolombia.api.controllers;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
+
+import co.com.bancolombia.api.exceptions.CustomException;
+import co.com.bancolombia.model.products.Product;
+import co.com.bancolombia.usecase.products.ProductUseCase;
+import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+
+@RestController
+@RequestMapping(value = "/products")
+@RequiredArgsConstructor
+public class ProductController {
+    private final ProductUseCase productUseCase;
+
+    @PostMapping
+    public Mono<Product> createProduct(@RequestBody Product product) {
+        return productUseCase.createProduct(product)
+                .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST)));
+    }
+
+    @GetMapping("/{id}")
+    public Mono<Product> findByIdProduct(@PathVariable("id") Integer id) {
+        return productUseCase.findByIdProduct(id)
+                .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
+    }
+
+    @GetMapping
+    public Flux<Product> findAllProduct() {
+        return productUseCase.findAllProduct()
+                .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NO_CONTENT)));
+    }
+
+    @PutMapping("{id}")
+    public Mono<Product> updateProduct(@RequestBody Product product, @PathVariable("id") Integer id) {
+        return productUseCase.updateProduct(product, id)
+                .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
+    }
+
+    @DeleteMapping("{id}")
+    public Mono<Void> deleteProduct(@PathVariable("id") Integer id) {
+        return productUseCase.findByIdProduct(id)
+                .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())))
+                .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.NOT_FOUND)))
+                .flatMap(product -> productUseCase.deleteProductById(id));
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public Mono<ResponseEntity<String>> handleCustomException(CustomException ex) {
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        String body = "Error: " + ex.getMessage();
+        return Mono.just(ResponseEntity.status(status).body(body))
+                .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())));
+    }
+}
