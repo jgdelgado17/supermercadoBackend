@@ -2,7 +2,7 @@ package co.com.bancolombia.r2dbc.adapters;
 
 import org.springframework.stereotype.Service;
 
-import co.com.bancolombia.model.products.Product;
+import co.com.bancolombia.model.product.Product;
 import co.com.bancolombia.r2dbc.entities.ProductEntity;
 import co.com.bancolombia.r2dbc.repositories.ProductRepository;
 import co.com.bancolombia.usecase.gateway.RepositoryCrud;

@@ -1,6 +1,6 @@
-package co.com.bancolombia.usecase.products;
+package co.com.bancolombia.usecase.product;
 
-import co.com.bancolombia.model.products.Product;
+import co.com.bancolombia.model.product.Product;
 import co.com.bancolombia.usecase.gateway.RepositoryCrud;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;

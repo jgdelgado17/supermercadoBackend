@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import co.com.bancolombia.model.products.Product;
+import co.com.bancolombia.model.product.Product;
 import co.com.bancolombia.r2dbc.helper.CustomException;
-import co.com.bancolombia.usecase.products.ProductUseCase;
+import co.com.bancolombia.usecase.product.ProductUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

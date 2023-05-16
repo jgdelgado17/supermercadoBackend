@@ -1,4 +1,4 @@
-package co.com.bancolombia.model.products;
+package co.com.bancolombia.model.product;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-// @Getter
-// @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
