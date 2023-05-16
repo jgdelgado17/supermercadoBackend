@@ -1,4 +1,4 @@
-package co.com.bancolombia.api.exceptions;
+package co.com.bancolombia.r2dbc.helper;
 
 public class CustomException extends RuntimeException {
 
