@@ -28,7 +28,7 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
     @Override
     public Mono<Nested> create(Nested nested) {
         // Buy buy = nested.getBuy();
-        List<ProductBuy> listProducts = nested.getProducts();
+        List<ProductBuy> listProductsBuy = nested.getProducts();
 
         BuyEntity entity = BuyEntity.builder()
                 .id(nested.getId())
@@ -41,9 +41,9 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
 
         Mono<Nested> nt = buyRepository.save(entity)
                 .flatMap(buyEntity -> {
-                    updateProduct(listProducts, buyEntity.getId());
+                    updateProduct(listProductsBuy, buyEntity.getId());
                     Nested n = new Nested(buyEntity.getId(), buyEntity.getDocument(), buyEntity.getDate(),
-                            buyEntity.getIdType(), buyEntity.getClientName(), listProducts);
+                            buyEntity.getIdType(), buyEntity.getClientName(), listProductsBuy);
 
                     return Mono.just(n);
                 });
@@ -76,9 +76,9 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
 
-    private void updateProduct(List<ProductBuy> list, Integer idBuy) {
+    private void updateProduct(List<ProductBuy> listProductsBuy, Integer idBuy) {
 
-        for (ProductBuy product : list) {
+        for (ProductBuy product : listProductsBuy) {
             Integer id = product.getIdProduct();
             int quantity = product.getQuantity();
             productUseCase.findByIdProduct(id)
