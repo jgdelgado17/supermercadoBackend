@@ -18,4 +18,5 @@ public class DetailBuyEntity {
     private Integer id;
     private Integer product;
     private Integer buy;
+    private Integer quantity;
 }

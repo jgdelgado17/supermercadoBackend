@@ -1,6 +1,7 @@
 package co.com.bancolombia.r2dbc.adapters;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -54,8 +55,21 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
 
     @Override
     public Mono<Nested> findById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findById'");
+        return buyRepository.findById(id)
+                .flatMap(buy -> {
+                    List<ProductBuy> buys = new ArrayList<>();
+
+                    detailBuyRepository.findByBuy(buy.getId())
+                            .flatMap(detailBuy -> {
+                                ProductBuy productBuy = new ProductBuy(detailBuy.getProduct(), detailBuy.getQuantity());
+                                buys.add(productBuy);
+                                return Mono.just(productBuy);
+                            });
+                    Nested nested = new Nested(buy.getId(), buy.getDocument(), buy.getDate(), buy.getIdType(),
+                            buy.getClientName(), buys);
+
+                    return Mono.just(nested);
+                });
     }
 
     @Override
@@ -89,7 +103,7 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
                             return productUseCase.updateProduct(producto, id)
                                     .doOnNext(pr -> {
                                         DetailBuyEntity detailBuyEntity = new DetailBuyEntity(null, producto.getId(),
-                                                idBuy);
+                                                idBuy, product.getQuantity());
                                         detailBuyRepository.save(detailBuyEntity).subscribe();
                                     });
                         } else
