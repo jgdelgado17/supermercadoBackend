@@ -14,83 +14,94 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class ProductAdapter implements RepositoryCrud<Product, Integer> {
 
-    private final ProductRepository productRepository;
+        private final ProductRepository productRepository;
 
-    @Override
-    public Mono<Product> create(Product product) {
+        @Override
+        public Mono<Product> create(Product product) {
 
-        ProductEntity entity = ProductEntity.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .inInventory(product.getInInventory())
-                .enabled(product.isEnabled())
-                .min(product.getMin())
-                .max(product.getMax())
-                .build();
+                ProductEntity entity = ProductEntity.builder()
+                                .id(product.getId())
+                                .name(product.getName())
+                                .inInventory(product.getInInventory())
+                                .enabled(product.isEnabled())
+                                .min(product.getMin())
+                                .max(product.getMax())
+                                .build();
 
-        return productRepository.save(entity)
-                .map(productEntity -> Product.builder()
-                        .id(productEntity.getId())
-                        .name(productEntity.getName())
-                        .inInventory(productEntity.getInInventory())
-                        .enabled(productEntity.isEnabled())
-                        .min(productEntity.getMin())
-                        .max(productEntity.getMax())
-                        .build());
-    }
+                if (entity.getInInventory() > entity.getMax() || entity.getInInventory() < entity.getMin())
+                        return Mono.error(new Throwable(
+                                        "No se puede hacer la inserción, el inventario queda fuera del máximo o minimo"));
+                else
+                        return productRepository.save(entity)
+                                        .map(productEntity -> Product.builder()
+                                                        .id(productEntity.getId())
+                                                        .name(productEntity.getName())
+                                                        .inInventory(productEntity.getInInventory())
+                                                        .enabled(productEntity.isEnabled())
+                                                        .min(productEntity.getMin())
+                                                        .max(productEntity.getMax())
+                                                        .build());
+        }
 
-    @Override
-    public Mono<Product> findById(Integer id) {
-        return productRepository.findById(id)
-                .map(productEntity -> Product.builder()
-                        .id(productEntity.getId())
-                        .name(productEntity.getName())
-                        .inInventory(productEntity.getInInventory())
-                        .enabled(productEntity.isEnabled())
-                        .min(productEntity.getMin())
-                        .max(productEntity.getMax())
-                        .build());
-    }
+        @Override
+        public Mono<Product> findById(Integer id) {
+                return productRepository.findById(id)
+                                .map(productEntity -> Product.builder()
+                                                .id(productEntity.getId())
+                                                .name(productEntity.getName())
+                                                .inInventory(productEntity.getInInventory())
+                                                .enabled(productEntity.isEnabled())
+                                                .min(productEntity.getMin())
+                                                .max(productEntity.getMax())
+                                                .build());
+        }
 
-    @Override
-    public Flux<Product> findAll() {
-        return productRepository.findAll()
-                .map(productEntity -> Product.builder()
-                        .id(productEntity.getId())
-                        .name(productEntity.getName())
-                        .inInventory(productEntity.getInInventory())
-                        .enabled(productEntity.isEnabled())
-                        .min(productEntity.getMin())
-                        .max(productEntity.getMax())
-                        .build());
-    }
+        @Override
+        public Flux<Product> findAll() {
+                return productRepository.findAll()
+                                .map(productEntity -> Product.builder()
+                                                .id(productEntity.getId())
+                                                .name(productEntity.getName())
+                                                .inInventory(productEntity.getInInventory())
+                                                .enabled(productEntity.isEnabled())
+                                                .min(productEntity.getMin())
+                                                .max(productEntity.getMax())
+                                                .build());
+        }
 
-    @Override
-    public Mono<Product> update(Product product, Integer id) {
-        return productRepository.findById(id)
-                .flatMap(productData -> {
-                    ProductEntity productNew = productData;
+        @Override
+        public Mono<Product> update(Product product, Integer id) {
+                return productRepository.findById(id)
+                                .flatMap(productData -> {
+                                        ProductEntity productNew = productData;
 
-                    productNew.setName(product.getName());
-                    productNew.setInInventory(product.getInInventory());
-                    productNew.setEnabled(product.isEnabled());
-                    productNew.setMin(product.getMin());
-                    productNew.setMax(product.getMax());
-                    return productRepository.save(productNew);
-                }).map(
-                        productEntity -> Product.builder()
-                                .id(productEntity.getId())
-                                .name(productEntity.getName())
-                                .inInventory(productEntity.getInInventory())
-                                .enabled(productEntity.isEnabled())
-                                .min(productEntity.getMin())
-                                .max(productEntity.getMax())
-                                .build());
-    }
+                                        productNew.setName(product.getName());
+                                        productNew.setInInventory(product.getInInventory());
+                                        productNew.setEnabled(product.isEnabled());
+                                        productNew.setMin(product.getMin());
+                                        productNew.setMax(product.getMax());
 
-    @Override
-    public Mono<Void> deleteById(Integer id) {
-        return productRepository.deleteById(id);
-    }
+                                        if (productNew.getInInventory() > productNew.getMax()
+                                                        || productNew.getInInventory() < productNew.getMin())
+                                                return Mono.error(new Throwable(
+                                                                "No se puede hacer la actualización, el inventario queda fuera del máximo o minimo"));
+                                        else
+                                                return productRepository.save(productNew);
+
+                                }).map(
+                                                productEntity -> Product.builder()
+                                                                .id(productEntity.getId())
+                                                                .name(productEntity.getName())
+                                                                .inInventory(productEntity.getInInventory())
+                                                                .enabled(productEntity.isEnabled())
+                                                                .min(productEntity.getMin())
+                                                                .max(productEntity.getMax())
+                                                                .build());
+        }
+
+        @Override
+        public Mono<Void> deleteById(Integer id) {
+                return productRepository.deleteById(id);
+        }
 
 }
