@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import co.com.bancolombia.model.nested.Nested;
+import co.com.bancolombia.model.product.Product;
 import co.com.bancolombia.model.productbuy.ProductBuy;
 import co.com.bancolombia.r2dbc.entities.BuyEntity;
 import co.com.bancolombia.r2dbc.entities.DetailBuyEntity;
@@ -78,7 +79,7 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
         for (ProductBuy product : listProductsBuy) {
             Integer id = product.getIdProduct();
             int quantity = product.getQuantity();
-            productUseCase.findByIdProduct(id)
+            Mono<Product> prod = productUseCase.findByIdProduct(id)
                     .flatMap(producto -> {
                         int min = producto.getMin();
                         if ((producto.getInInventory() - quantity) >= min) {
@@ -90,7 +91,8 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
                             return productUseCase.updateProduct(producto, id);
                         } else
                             return Mono.error(new Throwable("El inventario está abajo del minimo"));
-                    }).subscribe();
+                    });
+            prod.subscribe();
         }
     }
 
