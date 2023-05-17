@@ -27,7 +27,6 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
 
     @Override
     public Mono<Nested> create(Nested nested) {
-        // Buy buy = nested.getBuy();
         List<ProductBuy> listProductsBuy = nested.getProducts();
 
         BuyEntity entity = BuyEntity.builder()
@@ -36,7 +35,6 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
                 .date(LocalDateTime.now())
                 .idType(nested.getIdType())
                 .clientName(nested.getClientName())
-                // .products(buy.getProducts())
                 .build();
 
         Mono<Nested> nt = buyRepository.save(entity)
@@ -47,7 +45,6 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
 
                     return Mono.just(n);
                 });
-        // nt.subscribe();
 
         return nt;
     }
