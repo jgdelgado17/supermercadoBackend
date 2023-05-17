@@ -3,7 +3,7 @@ package co.com.bancolombia.model.nested;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import co.com.bancolombia.model.products.Products;
+import co.com.bancolombia.model.productbuy.ProductBuy;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +19,5 @@ public class Nested {
     private LocalDateTime date;
     private String idType;
     private String clientName;
-    private List<Products> products;
+    private List<ProductBuy> products;
 }

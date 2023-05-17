@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import co.com.bancolombia.model.nested.Nested;
 import co.com.bancolombia.r2dbc.helper.CustomException;
-import co.com.bancolombia.usecase.nested.NestedUseCase;
+import co.com.bancolombia.usecase.buy.BuyUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 
@@ -19,11 +19,11 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/buys")
 @RequiredArgsConstructor
 public class BuyController {
-    private final NestedUseCase nestedUseCase;
+    private final BuyUseCase buyUseCase;
 
     @PostMapping
     public Mono<Nested> createProduct(@RequestBody Nested nested) {
-        return nestedUseCase.createNested(nested)
+        return buyUseCase.createNested(nested)
                 .onErrorResume(e -> Mono.error(new CustomException(e.getMessage())))
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.BAD_REQUEST)));
     }

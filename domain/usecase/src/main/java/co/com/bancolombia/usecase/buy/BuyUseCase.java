@@ -1,6 +1,6 @@
 package co.com.bancolombia.usecase.buy;
 
-import co.com.bancolombia.model.buy.Buy;
+import co.com.bancolombia.model.nested.Nested;
 import co.com.bancolombia.usecase.gateway.RepositoryCrud;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Flux;
@@ -9,25 +9,25 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class BuyUseCase {
 
-    private final RepositoryCrud<Buy, Integer> repositoryCrud;
+    private final RepositoryCrud<Nested, Integer> repositoryCrud;
 
-    public Mono<Buy> createBuy(Buy buy) {
-        return repositoryCrud.create(buy);
+    public Mono<Nested> createNested(Nested nested) {
+        return repositoryCrud.create(nested);
     }
 
-    public Mono<Buy> findByIdBuy(Integer id) {
+    public Mono<Nested> findByIdNested(Integer id) {
         return repositoryCrud.findById(id);
     }
 
-    public Flux<Buy> findAllBuy() {
+    public Flux<Nested> findAllNested() {
         return repositoryCrud.findAll();
     }
 
-    public Mono<Buy> updateBuy(Buy buy, Integer id) {
-        return repositoryCrud.update(buy, id);
+    public Mono<Nested> updateNested(Nested nested, Integer id) {
+        return repositoryCrud.update(nested, id);
     }
 
-    public Mono<Void> deleteBuyById(Integer id) {
+    public Mono<Void> deleteNestedById(Integer id) {
         return repositoryCrud.deleteById(id);
     }
 }
