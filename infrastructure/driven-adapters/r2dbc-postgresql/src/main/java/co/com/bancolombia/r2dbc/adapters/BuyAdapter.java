@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import co.com.bancolombia.model.nested.Nested;
-import co.com.bancolombia.model.product.Product;
 import co.com.bancolombia.model.productbuy.ProductBuy;
 import co.com.bancolombia.r2dbc.entities.BuyEntity;
 import co.com.bancolombia.r2dbc.entities.DetailBuyEntity;
