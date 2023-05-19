@@ -29,7 +29,7 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
     @Override
     public Mono<Nested> create(Nested nested) {
         List<ProductBuy> listProductsBuy = nested.getProducts();
-
+    
         BuyEntity entity = BuyEntity.builder()
                 .id(nested.getId())
                 .document(nested.getDocument())
@@ -37,17 +37,14 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
                 .idType(nested.getIdType())
                 .clientName(nested.getClientName())
                 .build();
-
+    
         return buyRepository.save(entity)
-                .flatMap(buyEntity -> {
-
-                    updateProduct(listProductsBuy, buyEntity.getId());
-
-                    Nested n = new Nested(buyEntity.getId(), buyEntity.getDocument(), buyEntity.getDate(),
-                            buyEntity.getIdType(), buyEntity.getClientName(), listProductsBuy);
-
-                    return Mono.just(n);
-                });
+                .flatMap(buyEntity ->
+                    Flux.fromIterable(listProductsBuy)
+                        .flatMapSequential(product -> updateProduct(product, buyEntity.getId()))
+                        .then(Mono.just(new Nested(buyEntity.getId(), buyEntity.getDocument(), buyEntity.getDate(),
+                                buyEntity.getIdType(), buyEntity.getClientName(), listProductsBuy)))
+                );
     }
 
     @Override
@@ -96,26 +93,23 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
         throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
     }
 
-    private void updateProduct(List<ProductBuy> listProductsBuy, Integer idBuy) {
-
-        for (ProductBuy product : listProductsBuy) {
-            Integer id = product.getIdProduct();
-            int quantity = product.getQuantity();
-            productUseCase.findByIdProduct(id)
-                    .flatMap(producto -> {
-                        if ((producto.getInInventory() - quantity) >= producto.getMin()) {
-
-                            producto.setInInventory(producto.getInInventory() - quantity);
-                            return productUseCase.updateProduct(producto, id)
-                                    .doOnNext(pr -> {
-                                        DetailBuyEntity detailBuyEntity = new DetailBuyEntity(null, producto.getId(),
-                                                idBuy, product.getQuantity());
-                                        detailBuyRepository.save(detailBuyEntity).subscribe();
-                                    });
-                        } else
-                            return Mono.error(new Throwable("El inventario está abajo del minimo"));
-                    }).subscribe();
-        }
+    private Mono<Void> updateProduct(ProductBuy product, Integer idBuy) {
+        Integer id = product.getIdProduct();
+        int quantity = product.getQuantity();
+        
+        return productUseCase.findByIdProduct(id)
+            .flatMap(producto -> {
+                if ((producto.getInInventory() - quantity) >= producto.getMin()) {
+                    producto.setInInventory(producto.getInInventory() - quantity);
+                    return productUseCase.updateProduct(producto, id)
+                        .then(Mono.fromRunnable(() -> {
+                            DetailBuyEntity detailBuyEntity = new DetailBuyEntity(null, producto.getId(), idBuy, product.getQuantity());
+                            detailBuyRepository.save(detailBuyEntity).subscribe();
+                        }));
+                } else {
+                    return Mono.error(new Throwable("El inventario está por debajo del mínimo"));
+                }
+            });
     }
 
 }
