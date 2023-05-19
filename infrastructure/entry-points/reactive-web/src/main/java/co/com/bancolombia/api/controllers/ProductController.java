@@ -2,6 +2,7 @@ package co.com.bancolombia.api.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping(value = "/products")
+@CrossOrigin("http://localhost:4200")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductUseCase productUseCase;

@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "51d44a2b-44ae-4972-9f2d-5dacba9f6d43",
+		"name": "supermercado",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "products",
+			"item": [
+				{
+					"name": "Obtener productos y por id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Agregar producto",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Nevera verde\",\r\n    \"inInventory\": 7,\r\n    \"enabled\": true,\r\n    \"min\": 5,\r\n    \"max\": 50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/products",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar producto",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Nevera verde\",\r\n    \"inInventory\": 12,\r\n    \"enabled\": true,\r\n    \"min\": 6,\r\n    \"max\": 50\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/products/33",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Producto",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/products/59",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"59"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "buys",
+			"item": [
+				{
+					"name": "Hacer Compra",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"document\": 1094246872,\r\n    \"idType\": \"cc\",\r\n    \"clientName\": \"Carlos\",\r\n    \"products\": [\r\n        {\r\n            \"idProduct\": 4,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"idProduct\": 33,\r\n            \"quantity\": 1\r\n        },\r\n        {\r\n            \"idProduct\": 72,\r\n            \"quantity\": 1\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/buys",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"buys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Historial",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/buys",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"buys"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

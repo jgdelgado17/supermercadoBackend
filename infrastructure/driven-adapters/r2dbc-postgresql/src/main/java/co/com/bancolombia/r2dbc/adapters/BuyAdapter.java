@@ -54,25 +54,34 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
     public Mono<Nested> findById(Integer id) {
         return buyRepository.findById(id)
                 .flatMap(buy -> {
-                    List<ProductBuy> buys = new ArrayList<>();
+                    Mono<List<ProductBuy>> productBuy = detailBuyRepository.findByBuy(buy.getId())
+                            .map(detailBuy -> new ProductBuy(detailBuy.getProduct(), detailBuy.getQuantity()))
+                            .collectList();
 
-                    detailBuyRepository.findByBuy(buy.getId())
-                            .flatMap(detailBuy -> {
-                                ProductBuy productBuy = new ProductBuy(detailBuy.getProduct(), detailBuy.getQuantity());
-                                buys.add(productBuy);
-                                return Mono.just(productBuy);
-                            });
-                    Nested nested = new Nested(buy.getId(), buy.getDocument(), buy.getDate(), buy.getIdType(),
-                            buy.getClientName(), buys);
+                    return productBuy.map(buys -> {
+                        Nested nested = new Nested(buy.getId(), buy.getDocument(), buy.getDate(), buy.getIdType(),
+                                buy.getClientName(), buys);
 
-                    return Mono.just(nested);
+                        return nested;
+                    });
                 });
     }
 
     @Override
     public Flux<Nested> findAll() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findAll'");
+        return buyRepository.findAll()
+                .flatMap(buy -> {
+                    Mono<List<ProductBuy>> productBuy = detailBuyRepository.findByBuy(buy.getId())
+                            .map(detailBuy -> new ProductBuy(detailBuy.getProduct(), detailBuy.getQuantity()))
+                            .collectList();
+
+                    return productBuy.map(buys -> {
+                        Nested nested = new Nested(buy.getId(), buy.getDocument(), buy.getDate(), buy.getIdType(),
+                                buy.getClientName(), buys);
+
+                        return nested;
+                    });
+                });
     }
 
     @Override

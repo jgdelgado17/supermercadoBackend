@@ -2,6 +2,8 @@
 
 CREATE SCHEMA public AUTHORIZATION postgres;
 
+COMMENT ON SCHEMA public IS 'standard public schema';
+
 -- DROP SEQUENCE public.buys_id_seq;
 
 CREATE SEQUENCE public.buys_id_seq
@@ -35,11 +37,11 @@ CREATE SEQUENCE public.sales_id_seq
 -- DROP TABLE public.buys;
 
 CREATE TABLE public.buys (
-	"date" time NULL,
 	idtype varchar NULL,
 	clientname varchar NULL,
 	id bigserial NOT NULL,
 	"document" varchar NULL,
+	"date" timestamp NULL,
 	CONSTRAINT buys_pkey PRIMARY KEY (id)
 );
 
