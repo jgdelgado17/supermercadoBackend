@@ -98,6 +98,8 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
                 .flatMap(producto -> {
                     if ((producto.getInInventory() - quantity) >= producto.getMin()) {
                         producto.setInInventory(producto.getInInventory() - quantity);
+                        if (producto.getInInventory() == producto.getMin())
+                            producto.setEnabled(false);
                         return productUseCase.updateProduct(producto, id)
                                 .then(Mono.fromRunnable(() -> {
                                     DetailBuyEntity detailBuyEntity = new DetailBuyEntity(null, producto.getId(), idBuy,
@@ -105,7 +107,9 @@ public class BuyAdapter implements RepositoryCrud<Nested, Integer> {
                                     detailBuyRepository.save(detailBuyEntity).subscribe();
                                 }));
                     } else {
-                        return Mono.error(new Throwable("El inventario está por debajo del mínimo"));
+                        return Mono.error(new Throwable(
+                                "Esta compra dejaría el inventario por debajo del mínimo para el producto : "
+                                        + producto.getName()));
                     }
                 });
     }

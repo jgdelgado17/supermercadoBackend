@@ -28,6 +28,9 @@ public class ProductAdapter implements RepositoryCrud<Product, Integer> {
                                 .max(product.getMax())
                                 .build();
 
+                if (entity.getInInventory() == entity.getMin())
+                        entity.setEnabled(false);
+
                 if (entity.getInInventory() > entity.getMax() || entity.getInInventory() < entity.getMin())
                         return Mono.error(new Throwable(
                                         "No se puede hacer la inserción, el inventario queda fuera del máximo o minimo"));
@@ -80,6 +83,9 @@ public class ProductAdapter implements RepositoryCrud<Product, Integer> {
                                         productNew.setEnabled(product.isEnabled());
                                         productNew.setMin(product.getMin());
                                         productNew.setMax(product.getMax());
+
+                                        if (productNew.getInInventory() == productNew.getMin())
+                                                productNew.setEnabled(false);
 
                                         if (productNew.getInInventory() > productNew.getMax()
                                                         || productNew.getInInventory() < productNew.getMin())
